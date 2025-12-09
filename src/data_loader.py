@@ -6,6 +6,7 @@ import yfinance as yf
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
+from loguru import logger
 
 class StockDataset(Dataset):
     """Custom Dataset for stock price sequences"""
@@ -25,7 +26,7 @@ def get_data(ticker='AAPL', start='2019-01-01', end=None):
     if end is None:
         end = datetime.now()
     
-    print(f'Downloading {ticker} data...')
+    logger.info(f"Downloading {ticker} data...")
     df = yf.download(ticker, start=start, end=end, progress=False)
     if df.index.tz is not None:
         df.index = df.index.tz_localize(None)
@@ -56,6 +57,6 @@ def prepare_dataloaders(df, seq_len=60, batch_size=32):
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     
-    print(f"Data prepared: Train {len(train_loader)} batches, Val {len(val_loader)} batches, Test {len(test_loader)} batches")
+    logger.info(f"Data prepared: Train {len(train_loader)} batches, Val {len(val_loader)} batches, Test {len(test_loader)} batches")
     
     return train_loader, val_loader, test_loader, scaler

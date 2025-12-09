@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import mlflow
+from loguru import logger
 
 def evaluate_model(model, loader, scaler, device, dataset_name="Test"):
     """Evaluate model and log results to MLflow (no plots)"""
@@ -30,10 +31,10 @@ def evaluate_model(model, loader, scaler, device, dataset_name="Test"):
     mae = mean_absolute_error(actuals_inv, predictions_inv)
     r2 = r2_score(actuals_inv, predictions_inv)
     
-    print(f"\n{dataset_name} Metrics:")
-    print(f"   RMSE: {rmse:.4f}")
-    print(f"   MAE:  {mae:.4f}")
-    print(f"   R2:   {r2:.4f}")
+    logger.info(f"{dataset_name} Metrics:")
+    logger.info(f"   RMSE: {rmse:.4f}")
+    logger.info(f"   MAE:  {mae:.4f}")
+    logger.info(f"   R2:   {r2:.4f}")
     
     # Log metrics to MLflow
     mlflow.log_metrics({
