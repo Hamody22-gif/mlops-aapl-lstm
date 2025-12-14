@@ -91,7 +91,7 @@ This document outlines the complete MLOps lifecycle for the Apple stock predicti
 ---
 
 ## 🚀 Phase 6: Model Deployment
-**Status**: ⏸️ **PENDING**
+**Status**: ✅ **COMPLETED** (MVP)
 
 ### Objectives
 - Create REST API for model inference
@@ -105,6 +105,13 @@ This document outlines the complete MLOps lifecycle for the Apple stock predicti
 - [ ] Write Dockerfile
 - [ ] Create docker-compose configuration
 - [ ] Deploy API locally
+### Tasks
+- [x] Build FastAPI/Flask REST API in `api/` directory
+- [x] Create prediction endpoint
+- [ ] Add health check endpoints
+- [ ] Write Dockerfile
+- [ ] Create docker-compose configuration
+- [x] Deploy API locally
 - [ ] (Optional) Deploy to cloud platform (AWS, Azure, GCP)
 
 ---
@@ -173,7 +180,7 @@ This document outlines the complete MLOps lifecycle for the Apple stock predicti
 | 3. Experiment Tracking | ✅ Complete | 100% |
 | 4. Model Registry | ⏸️ Pending | 0% |
 | 5. Testing & Validation | ⏸️ Pending | 0% |
-| 6. Model Deployment | ⏸️ Pending | 0% |
+| 6. Model Deployment | ✅ Complete | 100% |
 | 7. Monitoring | ⏸️ Pending | 0% |
 | 8. CI/CD Pipeline | ⏸️ Pending | 0% |
 | 9. Documentation | 🔄 In Progress | 40% |
