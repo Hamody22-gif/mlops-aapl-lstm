@@ -53,7 +53,7 @@ with st.sidebar:
     api_url = st.text_input("API URL", "http://127.0.0.1:8000")
     
     st.subheader("Data Source")
-    ticker = st.text_input("Stock Ticker Symbol", value="AAPL")
+    ticker = st.selectbox("Stock Ticker Symbol", ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"])
     
     if st.button("🔄 Fetch Live Data", type="primary"):
         try:
@@ -70,9 +70,10 @@ with st.sidebar:
                 else:
                     # Take last 60 'Close' prices
                     # Handle MultiIndex if necessary, squeeze helps flatten it
-                    last_60 = df['Close'].tail(60).squeeze().tolist()
+                    last_60 = df['Close'].tail(60).squeeze()
                     
-                    st.session_state['prices'] = last_60
+                    st.session_state['prices'] = last_60.tolist()
+                    st.session_state['dates'] = last_60.index.strftime('%Y-%m-%d').tolist()
                     st.session_state['current_ticker'] = ticker
                     st.success(f"Loaded {len(last_60)} days for {ticker}!")
                     
@@ -86,6 +87,7 @@ if 'prices' not in st.session_state:
     st.stop() # Stop rendering until data is loaded
 
 prices = st.session_state['prices']
+dates = st.session_state.get('dates', None)
 current_ticker = st.session_state.get('current_ticker', "Unknown")
 
 # 1. Visualization
@@ -94,18 +96,20 @@ st.subheader(f"📊 Market Analysis: {current_ticker} (Last 60 Days)")
 # Create beautiful Plotly chart
 fig = go.Figure()
 fig.add_trace(go.Scatter(
+    x=dates if dates else list(range(len(prices))),
     y=prices, 
     mode='lines+markers',
     name='History',
     line=dict(color='#636EFA', width=3),
-    fill='tozeroy'
+    fill='tozeroy',
+    hovertemplate='<b>Date</b>: %{x}<br><b>Price</b>: $%{y:.2f}<extra></extra>'
 ))
 fig.update_layout(
     height=400,
     margin=dict(l=20, r=20, t=20, b=20),
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
-    xaxis_title="Trading Days",
+    xaxis_title="Date" if dates else "Trading Days",
     yaxis_title="Price ($)"
 )
 st.plotly_chart(fig, use_container_width=True)
@@ -123,7 +127,7 @@ with col_res:
     if predict_clicked:
         try:
             with st.spinner("Consulting the Neural Network..."):
-                payload = {"features": prices}
+                payload = {"features": prices, "ticker": current_ticker}
                 response = requests.post(f"{api_url}/predict", json=payload)
                 
                 if response.status_code == 200:

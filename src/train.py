@@ -43,13 +43,13 @@ def validate(model, loader, criterion, device):
     
     return total_loss / len(loader)
 
-def train_model(model, train_loader, val_loader, config: TrainConfig, device='cpu'):
+def train_model(model, train_loader, val_loader, config: TrainConfig, device='cpu', model_save_path='best_lstm_model.pth'):
     """Full training routine with MLflow tracking"""
     
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate, weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=5, verbose=True
+        optimizer, mode='min', factor=0.5, patience=5
     )
     
     logger.info(f"Starting training on {device}...")
@@ -91,7 +91,7 @@ def train_model(model, train_loader, val_loader, config: TrainConfig, device='cp
             # Save best model
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                torch.save(model.state_dict(), 'best_lstm_model.pth')
+                torch.save(model.state_dict(), model_save_path)
             
             # Log metrics
             if (epoch + 1) % 10 == 0:
@@ -101,7 +101,7 @@ def train_model(model, train_loader, val_loader, config: TrainConfig, device='cp
         logger.success(f"Training complete! Best validation loss: {best_val_loss:.6f}")
         
         # Load best model for logging
-        model.load_state_dict(torch.load('best_lstm_model.pth'))
+        model.load_state_dict(torch.load(model_save_path))
         
         # Infer signature and log model
         # Create a dummy input for signature inference
